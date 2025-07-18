@@ -19,6 +19,6 @@ public class Part {
 
     private String name;
     private String sku;
-    private int qty;
+    private int quantity;
     private String location;
 }

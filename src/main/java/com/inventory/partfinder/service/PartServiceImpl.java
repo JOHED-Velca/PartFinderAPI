@@ -35,4 +35,17 @@ public class PartServiceImpl implements PartService{
     public void deletePart(Long id) {
         partRepository.deleteById(id);
     }
+    
+    @Override
+    public Part updatePart(Long id, Part updatedPart) {
+        Part existingPart = partRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Part not found with id " + id));
+        
+        existingPart.setName(updatedPart.getName());
+        existingPart.setSku(updatedPart.getSku());
+        existingPart.setQuantity(updatedPart.getQuantity());
+        existingPart.setLocation(updatedPart.getLocation());
+        
+        return partRepository.save(existingPart);
+    }
 }

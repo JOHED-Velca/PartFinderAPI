@@ -35,4 +35,9 @@ public class PartController {
     public void deletePart(@PathVariable Long id) {
         partService.deletePart(id);
     }
+
+    @PutMapping("/{id}")
+    public Part updatePart(@PathVariable Long id, @RequestBody Part updatedPart) {
+        return partService.updatePart(id, updatedPart);
+    }
 }
