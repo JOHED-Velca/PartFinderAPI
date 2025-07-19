@@ -2,6 +2,7 @@ package com.inventory.partfinder.controller;
 
 import com.inventory.partfinder.model.Part;
 import com.inventory.partfinder.service.PartService;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -27,7 +28,7 @@ public class PartController {
     }
 
     @PostMapping
-    public Part savePart(@RequestBody Part part) {
+    public Part savePart(@Valid @RequestBody Part part) {
         return partService.savePart(part);
     }
 
@@ -37,7 +38,7 @@ public class PartController {
     }
 
     @PutMapping("/{id}")
-    public Part updatePart(@PathVariable Long id, @RequestBody Part updatedPart) {
+    public Part updatePart(@PathVariable Long id, @Valid @RequestBody Part updatedPart) {
         return partService.updatePart(id, updatedPart);
     }
 }
