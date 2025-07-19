@@ -45,7 +45,7 @@ public class PartServiceImpl implements PartService{
         existingPart.setName(updatedPart.getName());
         existingPart.setSku(updatedPart.getSku());
         existingPart.setQuantity(updatedPart.getQuantity());
-        existingPart.setLocation(updatedPart.getLocation());
+        existingPart.setLevel(updatedPart.getLevel());
         
         return partRepository.save(existingPart);
     }

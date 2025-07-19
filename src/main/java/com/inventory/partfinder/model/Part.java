@@ -1,9 +1,6 @@
 package com.inventory.partfinder.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -33,7 +30,8 @@ public class Part {
     @Min(value=0, message="Quantity must be 0 or more")
     private int quantity;
 
-    @NotBlank(message = "Location must not be blank")
-    @Size(max = 100, message = "Location must be at most 100 characters")
-    private String location;
+    @ManyToOne
+    @JoinColumn(name = "level_id", nullable = false)
+    @NotNull(message = "Level is required")
+    private Level level;
 }
