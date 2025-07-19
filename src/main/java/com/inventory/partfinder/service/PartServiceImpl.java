@@ -23,7 +23,8 @@ public class PartServiceImpl implements PartService{
 
     @Override
     public Part getPartById(Long id) {
-        return partRepository.findById(id).orElseThrow();
+        return partRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Part not found with ID: " + id));
     }
 
     @Override
