@@ -3,7 +3,9 @@ package com.inventory.partfinder.controller;
 import com.inventory.partfinder.dto.PartDto;
 import com.inventory.partfinder.model.Level;
 import com.inventory.partfinder.model.Part;
+import com.inventory.partfinder.model.ShelfSide;
 import com.inventory.partfinder.repository.LevelRepository;
+import com.inventory.partfinder.repository.PartRepository;
 import com.inventory.partfinder.service.PartService;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
@@ -16,10 +18,12 @@ public class PartController {
 
     private final PartService partService;
     private final LevelRepository levelRepository;
+    private final PartRepository partRepository;
 
-    public PartController(PartService partService, LevelRepository levelRepository) {
+    public PartController(PartService partService, LevelRepository levelRepository, PartRepository partRepository) {
         this.partService = partService;
         this.levelRepository=levelRepository;
+        this.partRepository=partRepository;
     }
 
     @GetMapping
@@ -30,6 +34,25 @@ public class PartController {
     @GetMapping("/{id}")
     public Part getPartById(@PathVariable Long id) {
         return partService.getPartById(id);
+    }
+
+    @GetMapping("/search")
+    public List<Part> searchParts(
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) String sku,
+            @RequestParam(required = false) Integer aisle,
+            @RequestParam(required = false) String side,
+            @RequestParam(required = false) Integer level
+    ) {
+        ShelfSide shelfSide = null;
+        if (side !=null) {
+            try {
+                shelfSide = ShelfSide.valueOf(side.toUpperCase());
+            } catch (IllegalArgumentException e) {
+                throw new RuntimeException("Invalid shelf side: " + side);
+            }
+        }
+        return partRepository.advancedSearch(name, sku, aisle, shelfSide != null ? shelfSide.name() : null, level);
     }
 
     @PostMapping
