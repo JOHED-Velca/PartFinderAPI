@@ -45,14 +45,14 @@ public class PartController {
             @RequestParam(required = false) Integer level
     ) {
         ShelfSide shelfSide = null;
-        if (side !=null) {
+        if (side != null) {
             try {
                 shelfSide = ShelfSide.valueOf(side.toUpperCase());
             } catch (IllegalArgumentException e) {
                 throw new RuntimeException("Invalid shelf side: " + side);
             }
         }
-        return partRepository.advancedSearch(name, sku, aisle, shelfSide != null ? shelfSide.name() : null, level);
+        return partRepository.advancedSearch(name, sku, aisle, shelfSide, level);
     }
 
     @PostMapping
