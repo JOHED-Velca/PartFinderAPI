@@ -23,7 +23,7 @@ public interface PartRepository extends JpaRepository<Part,Long> {
           AND (:aisle IS NULL OR p.level.shelf.aisle.number = :aisle)
           AND (:side IS NULL OR p.level.shelf.side = :side)
           AND (:level IS NULL OR p.level.levelNumber = :level)
-    """)
+    """) // queries need to be adjusted 'cause it is not working
     List<Part> advancedSearch(
             @Param("name") @Nullable String name,
             @Param("sku") @Nullable String sku,
