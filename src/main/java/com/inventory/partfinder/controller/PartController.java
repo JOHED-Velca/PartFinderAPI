@@ -7,9 +7,12 @@ import com.inventory.partfinder.model.ShelfSide;
 import com.inventory.partfinder.repository.LevelRepository;
 import com.inventory.partfinder.repository.PartRepository;
 import com.inventory.partfinder.service.PartService;
+import com.inventory.partfinder.specification.PartSpecification;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
+import org.springframework.data.domain.Pageable;
 import java.util.List;
 
 @RestController
@@ -37,12 +40,13 @@ public class PartController {
     }
 
     @GetMapping("/search")
-    public List<Part> searchParts(
+    public Page<Part> searchParts(
             @RequestParam(required = false) String name,
             @RequestParam(required = false) String sku,
             @RequestParam(required = false) Integer aisle,
             @RequestParam(required = false) String side,
-            @RequestParam(required = false) Integer level
+            @RequestParam(required = false) Integer level,
+            Pageable pageable
     ) {
         ShelfSide shelfSide = null;
         if (side != null) {
@@ -52,7 +56,10 @@ public class PartController {
                 throw new RuntimeException("Invalid shelf side: " + side);
             }
         }
-        return partRepository.advancedSearch(name, sku, aisle, shelfSide, level);
+        return partRepository.findAll(
+                PartSpecification.matches(name, sku, aisle, shelfSide, level),
+                pageable
+        );
     }
 
     @PostMapping
