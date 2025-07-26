@@ -1,6 +1,7 @@
 package com.inventory.partfinder.controller;
 
 import com.inventory.partfinder.dto.PartDto;
+import com.inventory.partfinder.dto.PartSearchDto;
 import com.inventory.partfinder.model.Level;
 import com.inventory.partfinder.model.Part;
 import com.inventory.partfinder.model.ShelfSide;
@@ -40,7 +41,7 @@ public class PartController {
     }
 
     @GetMapping("/search")
-    public Page<Part> searchParts(
+    public Page<PartSearchDto> searchParts(
             @RequestParam(required = false) String name,
             @RequestParam(required = false) String sku,
             @RequestParam(required = false) Integer aisle,
@@ -56,10 +57,20 @@ public class PartController {
                 throw new RuntimeException("Invalid shelf side: " + side);
             }
         }
-        return partRepository.findAll(
+        Page<Part> partPage = partRepository.findAll(
                 PartSpecification.matches(name, sku, aisle, shelfSide, level),
                 pageable
         );
+
+        return partPage.map(part -> new PartSearchDto(
+                part.getId(),
+                part.getName(),
+                part.getSku(),
+                part.getQuantity(),
+                part.getLevel().getShelf().getAisle().getNumber(),
+                part.getLevel().getShelf().getSide().toString(),
+                part.getLevel().getLevelNumber()
+        ));
     }
 
     @PostMapping
