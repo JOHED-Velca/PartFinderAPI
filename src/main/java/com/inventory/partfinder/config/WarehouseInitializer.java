@@ -1,4 +1,4 @@
-package com.inventory.partfinder.service;
+package com.inventory.partfinder.config;
 
 import com.inventory.partfinder.model.Aisle;
 import com.inventory.partfinder.model.Level;
@@ -28,6 +28,8 @@ public class WarehouseInitializer {
 
     @PostConstruct
     public void init() {
+        if (!aisleRepository.findAll().isEmpty()) return; // Prevent duplicate init
+
         for (int aisleNum = 1; aisleNum <= 5; aisleNum++) {
             Aisle aisle = new Aisle();
             aisle.setNumber(aisleNum);
