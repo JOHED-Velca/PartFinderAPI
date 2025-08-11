@@ -22,6 +22,6 @@ public class PartDto {
     @Min(0)
     private Integer quantity;
 
-    @NotNull(message = "Level ID is required")
+    //@NotNull(message = "Level ID is required")
     private Long levelId;
 }

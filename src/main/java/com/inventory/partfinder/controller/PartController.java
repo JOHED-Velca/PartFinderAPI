@@ -4,6 +4,7 @@ import com.inventory.partfinder.dto.PartDto;
 import com.inventory.partfinder.dto.PartSearchDto;
 import com.inventory.partfinder.model.Level;
 import com.inventory.partfinder.model.Part;
+import com.inventory.partfinder.model.Shelf;
 import com.inventory.partfinder.model.ShelfSide;
 import com.inventory.partfinder.repository.LevelRepository;
 import com.inventory.partfinder.repository.PartRepository;
@@ -63,27 +64,55 @@ public class PartController {
                 pageable
         );
 
-        return partPage.map(part -> new PartSearchDto(
+        // Null-safe mapping to DTO (handles parts without a level)
+        return partPage.map(this::toDto);
+    }
+
+    /** Null-safe mapper: Part -> PartSearchDto */
+    private PartSearchDto toDto(Part part) {
+        Integer aisleNum = null;
+        String sideStr = null;
+        Integer levelNum = null;
+
+        if (part.getLevel() != null) {
+            levelNum = part.getLevel().getLevelNumber();
+            if (part.getLevel().getShelf() != null) {
+                Shelf shelf = part.getLevel().getShelf();
+                if (shelf.getSide() != null) {
+                    sideStr = shelf.getSide().toString();
+                }
+                if (shelf.getAisle() != null) {
+                    aisleNum = shelf.getAisle().getNumber();
+                }
+            }
+        }
+
+        return new PartSearchDto(
                 part.getId(),
                 part.getName(),
                 part.getSku(),
                 part.getQuantity(),
-                part.getLevel().getShelf().getAisle().getNumber(),
-                part.getLevel().getShelf().getSide().toString(),
-                part.getLevel().getLevelNumber()
-        ));
+                aisleNum,
+                sideStr,
+                levelNum
+        );
     }
 
     @PostMapping
     public Part savePart(@Valid @RequestBody PartDto partDto) {
-        Level level = levelRepository.findById(partDto.getLevelId())
-                .orElseThrow(() -> new RuntimeException("Level not found"));
+//        Level level = levelRepository.findById(partDto.getLevelId())
+//                .orElseThrow(() -> new RuntimeException("Level not found"));
 
         Part part = new Part();
         part.setName(partDto.getName());
         part.setSku(partDto.getSku());
         part.setQuantity(partDto.getQuantity());
-        part.setLevel(level);
+//        part.setLevel(level);
+        if (partDto.getLevelId() != null) {
+            Level level = levelRepository.findById(partDto.getLevelId())
+                    .orElseThrow(() ->  new RuntimeException("Level not found"));
+            part.setLevel(level);
+        }
 
         return partService.savePart(part);
     }
@@ -95,14 +124,22 @@ public class PartController {
 
     @PutMapping("/{id}")
     public Part updatePart(@PathVariable Long id, @Valid @RequestBody PartDto partDto) {
-        Level level = levelRepository.findById(partDto.getLevelId())
-                .orElseThrow(() -> new RuntimeException("Level not found"));
+//        Level level = levelRepository.findById(partDto.getLevelId())
+//                .orElseThrow(() -> new RuntimeException("Level not found"));
 
         Part updatedPart = new Part();
         updatedPart.setName(partDto.getName());
         updatedPart.setSku(partDto.getSku());
         updatedPart.setQuantity(partDto.getQuantity());
-        updatedPart.setLevel(level);
+//        updatedPart.setLevel(level);
+        if (partDto.getLevelId() != null) {
+            Level level = levelRepository.findById(partDto.getLevelId())
+                    .orElseThrow(() -> new RuntimeException("Level not found"));
+            updatedPart.setLevel(level);
+        } else {
+            // Intentionally allow clearing the level by sending null
+            updatedPart.setLevel(null);
+        }
 
         return partService.updatePart(id, updatedPart);
     }

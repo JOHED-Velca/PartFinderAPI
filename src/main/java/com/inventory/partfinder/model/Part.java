@@ -32,6 +32,6 @@ public class Part {
 
     @ManyToOne
     @JoinColumn(name = "level_id", nullable = false)
-    @NotNull(message = "Level is required")
+    //@NotNull(message = "Level is required")
     private Level level;
 }
